@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,15 +13,28 @@ This dashboard analyzes climate data including **temperature, rainfall, humidity
 It also highlights **extreme climate events detected using machine learning anomaly detection**.
 """)
 
+# Load dataset
 df = pd.read_csv("C:\\Users\\avisw\\Desktop\\climate-trend-analysis-ml\\Data\\climate_features.csv")
 
-# Sidebar filters
+# Variable mapping (code → full name)
+variable_names = {
+    "T2M": "Temperature at 2m (°C)",
+    "PRECTOTCORR": "Precipitation / Rainfall (mm)",
+    "RH2M": "Relative Humidity (%)",
+    "WS10M": "Wind Speed at 10m (m/s)"
+}
+
+# Sidebar controls
 st.sidebar.header("Dashboard Controls")
 
-variable = st.sidebar.selectbox(
+# Show full names in dropdown
+variable_label = st.sidebar.selectbox(
     "Select Climate Variable",
-    ["T2M","PRECTOTCORR","RH2M","WS10M"]
+    list(variable_names.values())
 )
+
+# Convert label back to dataset column
+variable = [k for k,v in variable_names.items() if v == variable_label][0]
 
 year_range = st.sidebar.slider(
     "Select Year Range",
@@ -36,30 +48,36 @@ filtered = df[(df["YEAR"] >= year_range[0]) & (df["YEAR"] <= year_range[1])]
 # Layout
 col1, col2 = st.columns(2)
 
-# Temperature trend
+# Climate variable trend
 with col1:
-    st.subheader("Temperature Trend")
+
+    st.subheader(f"{variable_label} Trend")
 
     fig, ax = plt.subplots()
-    ax.plot(filtered["T2M"], color="red")
-    ax.set_title("Temperature Over Time")
-    ax.set_ylabel("Temperature (°C)")
+    ax.plot(filtered[variable], color="red")
+    ax.set_title(f"{variable_label} Over Time")
+    ax.set_ylabel(variable_label)
+    ax.set_xlabel("Time")
+
     st.pyplot(fig)
 
     st.write("""
     **Analysis:**  
-    This plot shows long-term temperature fluctuations. Seasonal cycles and gradual warming
-    patterns can often be observed in climate datasets.
+    This plot shows long-term climate fluctuations. Seasonal cycles and gradual changes
+    can often be observed in climate datasets.
     """)
 
 # Rainfall trend
 with col2:
+
     st.subheader("Rainfall Trend")
 
     fig, ax = plt.subplots()
     ax.plot(filtered["PRECTOTCORR"], color="blue")
     ax.set_title("Rainfall Over Time")
     ax.set_ylabel("Rainfall (mm)")
+    ax.set_xlabel("Time")
+
     st.pyplot(fig)
 
     st.write("""
@@ -74,15 +92,19 @@ st.subheader("Climate Variable Distributions")
 col3, col4 = st.columns(2)
 
 with col3:
+
     fig, ax = plt.subplots()
-    sns.histplot(filtered["T2M"], bins=40, kde=True, color="orange")
-    ax.set_title("Temperature Distribution")
+    sns.histplot(filtered[variable], bins=40, kde=True, color="orange")
+    ax.set_title(f"{variable_label} Distribution")
+
     st.pyplot(fig)
 
 with col4:
+
     fig, ax = plt.subplots()
     sns.histplot(filtered["PRECTOTCORR"], bins=40, kde=True, color="blue")
     ax.set_title("Rainfall Distribution")
+
     st.pyplot(fig)
 
 st.write("""
@@ -99,6 +121,7 @@ corr = filtered[["T2M","RH2M","WS10M","PRECTOTCORR"]].corr()
 
 fig, ax = plt.subplots()
 sns.heatmap(corr, annot=True, cmap="coolwarm")
+
 st.pyplot(fig)
 
 st.write("""
@@ -106,8 +129,6 @@ st.write("""
 Correlation analysis helps identify relationships between climate variables.
 For example, humidity often correlates with rainfall events.
 """)
-
-
 
 # Summary statistics
 st.subheader("Dataset Summary")
