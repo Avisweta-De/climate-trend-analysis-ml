@@ -80,8 +80,7 @@ Interactive Streamlit Dashboard
 
 The following models are implemented:
 
-* Random Forest Regression
-* Gradient Boosting
+* XGBOOST Regressor
 * Deep Learning LSTM for temperature forecasting
 * Isolation Forest for anomaly detection
 
@@ -110,8 +109,7 @@ An interactive dashboard built using **Streamlit** allows visualization of:
 * Temperature trends
 * Rainfall trends
 * Extreme weather events
-* Model predictions
-* Climate anomalies
+* Summary statistics
 
 Run dashboard locally:
 
@@ -133,7 +131,7 @@ Languages & Libraries
 * Scikit-learn
 * TensorFlow / Keras
 * Streamlit
-* SHAP (Explainable AI)
+  
 
 Tools
 
